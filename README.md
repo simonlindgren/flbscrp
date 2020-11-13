@@ -1,10 +1,18 @@
-# flbscrape
+# flbscrp
 
-A simplified version of [github.com/christopherkullenberg/flashbackscraper](https://github.com/christopherkullenberg/flashbackscraper).
+A simplified version of [github.com/christopherkullenberg/fl*shb*ckscr'per](https://github.com/christopherkullenberg/flashbackscraper).
 
-#### Usage
+#### Setup
 ```
 $ git clone <this repo>
-$ cd flbscrape
+$ cd flbscrp
+$ python3
+
+>>> import flbscrp
 ```
+#### Get subforum urls
+```
+>>> flbscrp.get_subforum_threads("https://www.fl*shb*ck.org/f***")
+```
+Saves url list to *txt.
 
