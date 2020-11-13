@@ -36,7 +36,15 @@ def get_thread(thread_url,db_name):
 
         current_url = thread_url + "p" + str(page)
         print("Getting " + current_url)
-        r = requests.get(current_url, headers=headers)
+
+        # The following line is for running without Tor proxy
+        # r = requests.get(current_url, headers=headers)
+
+        # The following three lines is for running with Tor proxy
+        session = requests.session()
+        session.proxies['https'] = 'socks5h://localhost:9050'
+        r = session.get(current_url, headers=headers)
+
         html = r.content
         soup = BeautifulSoup(html, "lxml")
 
