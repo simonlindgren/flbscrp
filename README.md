@@ -16,3 +16,8 @@ $ python3
 ```
 Saves url list to *txt.
 
+#### Create db to store data
+```
+>>> flbscrp.createdatabase("my_data")
+```
+Creates empty *sqlite3.
