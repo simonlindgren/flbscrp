@@ -34,3 +34,11 @@ Populates the db with thread data.
 ```
 Populates the db with data from threads in file.
 
+### db to csv
+
+```
+>>> flbscrp.db_to_csv("my_data.sqlite3")
+```
+
+Saves db contents to csv.
+
