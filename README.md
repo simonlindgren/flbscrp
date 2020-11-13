@@ -27,3 +27,10 @@ Creates empty *sqlite3.
 flbscrape.get_thread("https://www.fl*shb*ck.org/t******", "my_data.sqlite3")
 ```
 Populates the db with thread data.
+
+### Get threads from file with urls
+```
+flbscrp.get_thread("https://www.fl*shb*ck.org/t******", "my_data.sqlite3")
+```
+Populates the db with thread data.
+
