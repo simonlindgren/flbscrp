@@ -30,7 +30,7 @@ Populates the db with thread data.
 
 ### Get threads from file with urls
 ```
-flbscrp.get_thread("https://www.fl*shb*ck.org/t******", "my_data.sqlite3")
+flbscrp.get_threads("f***_topic_urls.txt", "my_data.sqlite3")
 ```
-Populates the db with thread data.
+Populates the db with data from threads in file.
 
