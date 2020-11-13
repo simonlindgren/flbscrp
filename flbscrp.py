@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import re
 import sqlite3
 import datetime
+import pandas as pd
 
 
 def get_thread(thread_url,db_name):
@@ -203,12 +204,15 @@ def parseforumstructure(soup):
             pathlist.append(p.text)
     return (pathlist)
 
-
-
-
 def get_threads(file_with_urls,db_name):
     with open(file_with_urls, "r") as urlfile:
         urls = urlfile.readlines()
     for url in urls:
         url = url.strip("\n")
         get_thread(url, db_name)
+
+def db_to_csv(db_name):
+    conn = sqlite3.connect(db_name)
+    df = pd.read_sql_query("SELECT * FROM fb", conn)
+    df = df.drop_duplicates()
+    df.to_csv("flbdata.csv", index=False)
