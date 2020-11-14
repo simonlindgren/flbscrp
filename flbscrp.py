@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 FLBSCRAPE
 """
@@ -10,10 +8,9 @@ from bs4 import BeautifulSoup
 import re
 import sqlite3
 import datetime
-import pandas as pd
 
 
-def get_thread(thread_url,db_name,tor):
+def get_thread(thread_url,db_name):
     user_agent_list = []
     page = 1
     current_url = thread_url + "p" + str(page)
@@ -37,18 +34,9 @@ def get_thread(thread_url,db_name,tor):
 
         current_url = thread_url + "p" + str(page)
         print("Getting " + current_url)
-        
-        # Get page without Tor
-        if tor == 0:
-            r = requests.get(current_url, headers=headers)
-        
-        # Get page with Tor
-        if tor == 1: 
-            session = requests.session()
-            session.proxies['http'] = 'socks5h://localhost:9050'
-            session.proxies['https'] = 'socks5h://localhost:9050'
-            r = session.get(current_url, headers=headers)      
-        
+
+        r = requests.get(current_url, headers=headers)
+  
         html = r.content
         soup = BeautifulSoup(html, "lxml")
 
@@ -151,7 +139,7 @@ def get_thread(thread_url,db_name,tor):
 
     print("Done")
 
-def get_subforum_threads(subforum_url,tor):
+def get_subforum_threads(subforum_url):
     user_agent_list = []
     page = 1
     current_url = subforum_url + "p" + str(page)
@@ -169,18 +157,7 @@ def get_subforum_threads(subforum_url,tor):
             headers = {"User-Agent": user_agent}
 
             print("Getting " + current_url)
-            
-            # Get page without Tor
-            if tor == 0:
-                r = requests.get(current_url, headers=headers)
-            
-            # Get page with Tor
-            if tor == 1:
-                session = requests.session()
-                session.proxies['http'] = 'socks5h://localhost:9050'
-                session.proxies['https'] = 'socks5h://localhost:9050'
-                r = session.get(current_url, headers=headers)    
-            
+            r = requests.get(current_url, headers=headers)
             html = r.content
             soup = BeautifulSoup(html, "lxml")
             topics = soup.findAll('a', id=re.compile("thread_title_\d"))
@@ -224,12 +201,12 @@ def parseforumstructure(soup):
             pathlist.append(p.text)
     return (pathlist)
 
-def get_threads(file_with_urls,db_name,tor):
+def get_threads(file_with_urls,db_name):
     with open(file_with_urls, "r") as urlfile:
         urls = urlfile.readlines()
     for url in urls:
         url = url.strip("\n")
-        get_thread(url, db_name,tor)
+        get_thread(url, db_name)
 
 def db_to_csv(db_name):
     conn = sqlite3.connect(db_name)
