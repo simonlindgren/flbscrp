@@ -2,6 +2,8 @@
 
 A simplified version of [github.com/christopherkullenberg/fl\*shb\*ckscr\*per](https://github.com/christopherkullenberg/flashbackscraper).
 
+*Note:* Use responsibly with regards to network usage and potential privacy aspects.
+
 ### Setup
 ```
 $ git clone <this repo>
