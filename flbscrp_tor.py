@@ -234,11 +234,11 @@ def db_to_csv(db_name):
 
 def check_ip():
     headers = { 'User-Agent': UserAgent().random }
-    test_r = requests.get("https://httpbin.org/ip", headers=headers)
-    print("\nactual ip " + str(test_r.text) + "\n")
+    test_r = requests.get("https://api.ipify.org/?format=text", headers=headers)
+    print("\nactual ip --> " + str(test_r.text))
     
 def check_tor():
     headers = { 'User-Agent': UserAgent().random }
     proxies = {'http': 'socks5://127.0.0.1:9050','https': 'socks5://127.0.0.1:9050'}
-    test_r = requests.get("https://httpbin.org/ip", proxies = proxies, headers=headers)
-    print("\ntor ip " + str(test_r.text) + "\n")
+    test_r = requests.get("https://api.ipify.org/?format=text", proxies = proxies, headers=headers)
+    print("tor ip -----> " + str(test_r.text) + "\n")
