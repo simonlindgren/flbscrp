@@ -104,7 +104,6 @@ def get_thread(thread_url,db_name):
         for p in postsoup:
             postbody = re.sub(r"[\n\t]*", "", p.text)  # clean out tab, newlines
             bodylist.append(postbody)
-            previouslyaddedpageposts.append(postbody)
         page +=1
 
         # Get replies
@@ -142,7 +141,9 @@ def get_thread(thread_url,db_name):
             if previouslyaddedpageposts == bodylist: # stop if this page is identical to the previous one
                 break
             else:
+                previouslyaddedpageposts = bodylist
                 pass
+            
     print("Done")
 
 def get_subforum_threads(subforum_url):
