@@ -18,6 +18,8 @@ from fake_useragent import UserAgent
 import pandas as pd
 
 def get_thread(thread_url,db_name):
+    check_ip()
+    check_tor()
     page = 1
     current_url = thread_url + "p" + str(page)
     previouslyaddedpageposts = []
@@ -159,6 +161,8 @@ def get_thread(thread_url,db_name):
         print("Done")
 
 def get_subforum_threads(subforum_url):
+    check_ip()
+    check_tor()
     page = 1
     current_url = subforum_url + "p" + str(page)
     filename = subforum_url.split("/")[3]
@@ -227,3 +231,14 @@ def db_to_csv(db_name):
     df = pd.read_sql_query("SELECT * FROM fb", conn)
     df = df.drop_duplicates()
     df.to_csv("flbdata.csv", index=False)
+
+def check_ip():
+    headers = { 'User-Agent': UserAgent().random }
+    r = requests.get("icanhazip.com", headers=headers)
+    print("\n actual ip " + str(r.text) + "\n")
+    
+def check_tor():
+    headers = { 'User-Agent': UserAgent().random }
+    proxies = {'http': 'socks5://127.0.0.1:9050','https': 'socks5://127.0.0.1:9050'}
+    r = requests.get("icanhazip.com", proxies = proxies, headers=headers)
+    print("\ntor ip " + str(r.text) + "\n")
