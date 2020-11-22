@@ -226,12 +226,6 @@ def get_threads(file_with_urls,db_name):
         url = url.strip("\n")
         get_thread(url, db_name)
 
-def db_to_csv(db_name):
-    conn = sqlite3.connect(db_name)
-    df = pd.read_sql_query("SELECT * FROM fb", conn)
-    df = df.drop_duplicates()
-    df.to_csv("flbdata.csv", index=False)
-
 def check_ip():
     headers = { 'User-Agent': UserAgent().random }
     test_r = requests.get("https://api.ipify.org/?format=text", headers=headers)
