@@ -14,21 +14,21 @@ def get_thread(thread_url,db_name):
     user_agent_list = []
     page = 1
     current_url = thread_url + "p" + str(page)
+    previouslyaddedpageposts = []
 
     with open("user_agents.txt", "r") as uafile:
         agents = uafile.readlines()
         for a in agents:
             user_agent_list.append(a.strip("\n"))
-
-    postidlist = []
-    userlist = []
-    datelist = []
-    timelist = []
-    bodylist = []
-    inreplylist = []
-
-
+    
     while True:
+        postidlist = []
+        userlist = []
+        datelist = []
+        timelist = []
+        bodylist = []
+        inreplylist = []
+        
         user_agent = random.choice(user_agent_list)
         headers = {"User-Agent": user_agent}
 
@@ -117,8 +117,8 @@ def get_thread(thread_url,db_name):
 
         """
         Dump to database
-        """
-
+        """       
+        
         db = sqlite3.connect(db_name)
         cursor = db.cursor()
         for n in range(0, len(bodylist)):
@@ -133,10 +133,15 @@ def get_thread(thread_url,db_name):
                 db.commit()
             except (IndexError, sqlite3.IntegrityError) as e:
                 pass
-
-        if len(postsoup) < 12:
+                
+        if len(postsoup) < 12: # then it is the last page of the thread
             break
-
+        
+        if len(postsoup) == 12: # it may still happen to be the last page
+            if previouslyaddedpageposts == bodylist: # stop if this page is identical to the previous one
+                break
+            else:
+                pass
     print("Done")
 
 def get_subforum_threads(subforum_url):
