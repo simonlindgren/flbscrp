@@ -104,6 +104,7 @@ def get_thread(thread_url,db_name):
         for p in postsoup:
             postbody = re.sub(r"[\n\t]*", "", p.text)  # clean out tab, newlines
             bodylist.append(postbody)
+            previouslyaddedpageposts.append(postbody)
         page +=1
 
         # Get replies
