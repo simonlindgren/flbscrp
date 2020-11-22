@@ -116,35 +116,47 @@ def get_thread(thread_url,db_name):
                 inreplylist.append("none")
 
         """
-        Dump to database
+        Check if thread end is reached, dump to db, continue or stop
         """       
         
-        db = sqlite3.connect(db_name)
-        cursor = db.cursor()
-        for n in range(0, len(bodylist)):
-            try:
-                cursor.execute('''
+        if len(postsoup) < 12: # then it is the last page of the thread, dump and stop
+            db = sqlite3.connect(db_name)
+            cursor = db.cursor()
+            for n in range(0, len(bodylist)):
+                try:
+                    cursor.execute('''
                     INSERT INTO fb(idnumber, user, date, time, body,
                                    inreply, title, path)
                     VALUES(?,?,?,?,?,?,?,?)''',
                                (postidlist[n], userlist[n], datelist[n], timelist[n],
                                 bodylist[n], inreplylist[n], title, str(parseforumstructure(soup)))
                                )
-                db.commit()
-            except (IndexError, sqlite3.IntegrityError) as e:
-                pass
-                
-        if len(postsoup) < 12: # then it is the last page of the thread
+                    db.commit()
+                except (IndexError, sqlite3.IntegrityError) as e:
+                    pass
             break
-        
-        if len(postsoup) == 12: # it may still happen to be the last page
-            if previouslyaddedpageposts == bodylist: # stop if this page is identical to the previous one
+                        
+        if len(postsoup) >= 12: # it may still happen to be the last page, if page contains the exact last 12 posts
+            if previouslyaddedpageposts == bodylist: # if this page is identical to the previous, the last page was exactly 12 posts, so stop
                 break
-            else:
-                previouslyaddedpageposts = bodylist
-                pass
+            else: # otherwise it is a regular full page, so dump to db and continue
+                db = sqlite3.connect(db_name)
+                cursor = db.cursor()
+                for n in range(0, len(bodylist)):
+                    try:
+                        cursor.execute('''
+                        INSERT INTO fb(idnumber, user, date, time, body,
+                                   inreply, title, path)
+                        VALUES(?,?,?,?,?,?,?,?)''',
+                               (postidlist[n], userlist[n], datelist[n], timelist[n],
+                                bodylist[n], inreplylist[n], title, str(parseforumstructure(soup)))
+                               )
+                        db.commit()
+                    except (IndexError, sqlite3.IntegrityError) as e:
+                        pass
+                        previouslyaddedpageposts = bodylist
             
-    print("Done")
+        print("Done")
 
 def get_subforum_threads(subforum_url):
     user_agent_list = []
