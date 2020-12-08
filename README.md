@@ -36,3 +36,6 @@ Populates the db with thread data.
 ```
 Populates the db with data from threads in file.
 
+### Failed urls
+
+URLs that could not be scraped will be saved to `failed_urls.txt`.

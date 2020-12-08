@@ -17,7 +17,8 @@ import datetime
 from fake_useragent import UserAgent
 import pandas as pd
 
-def get_thread(thread_url,db_name):
+
+def get_thread(thread_url, db_name):
     check_ip()
     check_tor()
     page = 1
@@ -32,13 +33,21 @@ def get_thread(thread_url,db_name):
         bodylist = []
         inreplylist = []
 
-        headers = { 'User-Agent': UserAgent().random }
+        headers = {'User-Agent': UserAgent().random}
         current_url = thread_url + "p" + str(page)
         print("Getting " + current_url)
 
-        # r = requests.get(current_url, headers=headers) # to run without tor
-        proxies = {'http': 'socks5://127.0.0.1:9050','https': 'socks5://127.0.0.1:9050'} # to run with tor
-        r = requests.get(current_url, proxies = proxies, headers=headers) # to run with tor
+        try:
+            # r = requests.get(current_url, headers=headers) # to run without tor
+            proxies = {'http': 'socks5://127.0.0.1:9050',
+                       'https': 'socks5://127.0.0.1:9050'}  # to run with tor
+            r = requests.get(current_url, proxies=proxies, headers=headers)  # to run with tor
+        except Exception:
+            print("There was an error. Proceeding to next url. Check 'failed_urls.txt'")
+            with open("failed_urls.txt", "a") as failfile:
+                failfile.write(current_url + "\n")  # record failed urls
+            return(9000)
+            page += 1
 
         html = r.content
         soup = BeautifulSoup(html, "lxml")
@@ -106,7 +115,7 @@ def get_thread(thread_url,db_name):
         for p in postsoup:
             postbody = re.sub(r"[\n\t]*", "", p.text)  # clean out tab, newlines
             bodylist.append(postbody)
-        page +=1
+        page += 1
 
         # Get replies
         for p in postsoup:
@@ -121,7 +130,7 @@ def get_thread(thread_url,db_name):
         Check if thread end is reached, dump to db, continue or stop
         """
 
-        if len(postsoup) < 12: # then it is the last page of the thread, dump and stop
+        if len(postsoup) < 12:  # then it is the last page of the thread, dump and stop
             db = sqlite3.connect(db_name)
             cursor = db.cursor()
             for n in range(0, len(bodylist)):
@@ -130,18 +139,18 @@ def get_thread(thread_url,db_name):
                     INSERT INTO fb(idnumber, user, date, time, body,
                                    inreply, title, path)
                     VALUES(?,?,?,?,?,?,?,?)''',
-                               (postidlist[n], userlist[n], datelist[n], timelist[n],
-                                bodylist[n], inreplylist[n], title, str(parseforumstructure(soup)))
-                               )
+                                   (postidlist[n], userlist[n], datelist[n], timelist[n],
+                                    bodylist[n], inreplylist[n], title, str(parseforumstructure(soup)))
+                                   )
                     db.commit()
                 except (IndexError, sqlite3.IntegrityError) as e:
                     pass
             break
 
-        if len(postsoup) >= 12: # it may still happen to be the last page, if page contains the exact last 12 posts
-            if previouslyaddedpageposts == bodylist: # if this page is identical to the previous, the last page was exactly 12 posts, so stop
+        if len(postsoup) >= 12:  # it may still happen to be the last page, if page contains the exact last 12 posts
+            if previouslyaddedpageposts == bodylist:  # if this page is identical to the previous, the last page was exactly 12 posts, so stop
                 break
-            else: # otherwise it is a regular full page, so dump to db and continue
+            else:  # otherwise it is a regular full page, so dump to db and continue
                 db = sqlite3.connect(db_name)
                 cursor = db.cursor()
                 for n in range(0, len(bodylist)):
@@ -150,15 +159,16 @@ def get_thread(thread_url,db_name):
                         INSERT INTO fb(idnumber, user, date, time, body,
                                    inreply, title, path)
                         VALUES(?,?,?,?,?,?,?,?)''',
-                               (postidlist[n], userlist[n], datelist[n], timelist[n],
-                                bodylist[n], inreplylist[n], title, str(parseforumstructure(soup)))
-                               )
+                                       (postidlist[n], userlist[n], datelist[n], timelist[n],
+                                        bodylist[n], inreplylist[n], title, str(parseforumstructure(soup)))
+                                       )
                         db.commit()
                     except (IndexError, sqlite3.IntegrityError) as e:
                         pass
                         previouslyaddedpageposts = bodylist
 
         print("Done")
+
 
 def get_subforum_threads(subforum_url):
     check_ip()
@@ -169,12 +179,13 @@ def get_subforum_threads(subforum_url):
 
     with open(filename + "_topic_urls.txt", "w") as outfile:
         while True:
-            headers = { 'User-Agent': UserAgent().random }
+            headers = {'User-Agent': UserAgent().random}
             print("Getting " + current_url)
 
             # r = requests.get(current_url, headers=headers) # to run without tor
-            proxies = {'http': 'socks5://127.0.0.1:9050','https': 'socks5://127.0.0.1:9050'} # to run with tor
-            r = requests.get(current_url, proxies = proxies, headers=headers) # to run with tor
+            proxies = {'http': 'socks5://127.0.0.1:9050',
+                       'https': 'socks5://127.0.0.1:9050'}  # to run with tor
+            r = requests.get(current_url, proxies=proxies, headers=headers)  # to run with tor
 
             html = r.content
             soup = BeautifulSoup(html, "lxml")
@@ -186,7 +197,7 @@ def get_subforum_threads(subforum_url):
                 for t in topics:
                     threadurl = "https://flashback.org" + t.get("href")
                     outfile.write(threadurl + "\n")
-                page+=1
+                page += 1
                 current_url = subforum_url + "p" + str(page)
 
             if len(topics) < 50:
@@ -195,6 +206,7 @@ def get_subforum_threads(subforum_url):
                     outfile.write(threadurl + "\n")
                 break
         print("Done")
+
 
 def createdatabase(projectname):
     try:
@@ -210,6 +222,7 @@ def createdatabase(projectname):
         print("The file", projectname +
               ".sqlite3 already exists. Use a different name, or delete it.")
 
+
 def parseforumstructure(soup):
     pathdiv = soup.find("div", class_="form-group")
     pathdata = pathdiv.findAll("option")
@@ -219,20 +232,23 @@ def parseforumstructure(soup):
             pathlist.append(p.text)
     return (pathlist)
 
-def get_threads(file_with_urls,db_name):
+
+def get_threads(file_with_urls, db_name):
     with open(file_with_urls, "r") as urlfile:
         urls = urlfile.readlines()
     for url in urls:
         url = url.strip("\n")
         get_thread(url, db_name)
 
+
 def check_ip():
-    headers = { 'User-Agent': UserAgent().random }
+    headers = {'User-Agent': UserAgent().random}
     test_r = requests.get("https://api.ipify.org/?format=text", headers=headers)
     print("\nactual ip --> " + str(test_r.text))
-    
+
+
 def check_tor():
-    headers = { 'User-Agent': UserAgent().random }
-    proxies = {'http': 'socks5://127.0.0.1:9050','https': 'socks5://127.0.0.1:9050'}
-    test_r = requests.get("https://api.ipify.org/?format=text", proxies = proxies, headers=headers)
+    headers = {'User-Agent': UserAgent().random}
+    proxies = {'http': 'socks5://127.0.0.1:9050', 'https': 'socks5://127.0.0.1:9050'}
+    test_r = requests.get("https://api.ipify.org/?format=text", proxies=proxies, headers=headers)
     print("tor ip -----> " + str(test_r.text) + "\n")
