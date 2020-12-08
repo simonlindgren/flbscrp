@@ -1,6 +1,6 @@
 # flbscrp
 
-A simplified version of [github.com/christopherkullenberg/fl\*shb\*ckscr\*per](https://github.com/christopherkullenberg/flashbackscraper).
+A version of [github.com/christopherkullenberg/fl\*shb\*ckscr\*per](https://github.com/christopherkullenberg/flashbackscraper).
 
 *Note:* Use responsibly with regards to network usage and potential privacy aspects.
 
