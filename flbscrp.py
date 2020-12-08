@@ -42,7 +42,7 @@ def get_thread(thread_url, db_name):
             proxies = {'http': 'socks5://127.0.0.1:9050',
                        'https': 'socks5://127.0.0.1:9050'}  # to run with tor
             r = requests.get(current_url, proxies=proxies, headers=headers)  # to run with tor
-        except Exception:
+        except:
             print("There was an error. Proceeding to next url. Check 'failed_urls.txt'")
             with open("failed_urls.txt", "a") as failfile:
                 failfile.write(current_url + "\n")  # record failed urls
@@ -238,8 +238,13 @@ def get_threads(file_with_urls, db_name):
         urls = urlfile.readlines()
     for url in urls:
         url = url.strip("\n")
-        get_thread(url, db_name)
-
+        try:
+            get_thread(url, db_name)
+        except:
+            print("There was an error. Proceeding to next url. Check 'failed_urls.txt'")
+            with open("failed_urls.txt", "a") as failfile:
+                failfile.write(current_url + "\n")  # record failed urls
+            continue
 
 def check_ip():
     headers = {'User-Agent': UserAgent().random}
