@@ -39,3 +39,9 @@ Populates the db with data from threads in file.
 ### Failed urls
 
 URLs that could not be scraped will be saved to `failed_urls.txt`.
+
+### Convert database to csv
+```
+>>> flbscrp.sql2csv("my_data.sqlite3")
+```
+Creates `data.csv`.

@@ -257,3 +257,9 @@ def check_tor():
     proxies = {'http': 'socks5://127.0.0.1:9050', 'https': 'socks5://127.0.0.1:9050'}
     test_r = requests.get("https://api.ipify.org/?format=text", proxies=proxies, headers=headers)
     print("tor ip -----> " + str(test_r.text) + "\n")
+
+def sql2csv(filepath):
+    conn = sqlite3.connect(filepath)
+    df = pd.read_sql_query("SELECT * FROM fb", conn)
+    print(str(len(df)) + " items")
+    df.to_csv("data.csv", index = False)
