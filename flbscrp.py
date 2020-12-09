@@ -236,8 +236,9 @@ def parseforumstructure(soup):
 def get_threads(file_with_urls, db_name):
     with open(file_with_urls, "r") as urlfile:
         urls = urlfile.readlines()
-    for url in urls:
+    for c,url in enumerate(urls):
         url = url.strip("\n")
+        print("\n==== Thread " + str(c+1) + " / " + str(len(urls)))
         try:
             get_thread(url, db_name)
         except:
