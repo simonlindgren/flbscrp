@@ -16,6 +16,9 @@ import sqlite3
 import datetime
 from fake_useragent import UserAgent
 import pandas as pd
+from time import sleep
+import random
+
 
 def get_thread(thread_url, db_name):
     check_ip()
@@ -260,7 +263,10 @@ def get_threads(file_with_urls, db_name):
             logfile.write("\n==== Thread " + str(c+1) + " / " + str(len(urls)) + "\n")
         try:
             get_thread(url, db_name)
-            
+            pause = random.randint(2,20)
+            with open("flbscrp.log", "a") as logfile:
+                logfile.write("Sleeping " + str(pause) + " sec ...\n")
+            sleep(pause) # sleep a random number of seconds between 2 and 20
         except:
             with open("flbscrp.log", "a") as logfile:
                 ("There was an error. Proceeding to next url. Check 'failed_urls.txt'\n")
