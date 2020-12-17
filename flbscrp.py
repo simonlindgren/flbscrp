@@ -17,13 +17,15 @@ import datetime
 from fake_useragent import UserAgent
 import pandas as pd
 
-
 def get_thread(thread_url, db_name):
     check_ip()
     check_tor()
     page = 1
     current_url = thread_url + "p" + str(page)
     previouslyaddedpageposts = []
+
+    with open("flbscrp.log", "a") as logfile:
+        logfile.write("Running get_thread()\n")
 
     while True:
         postidlist = []
@@ -35,7 +37,8 @@ def get_thread(thread_url, db_name):
 
         headers = {'User-Agent': UserAgent().random}
         current_url = thread_url + "p" + str(page)
-        print("Getting " + current_url)
+        with open("flbscrp.log", "a") as logfile:
+            logfile.write("Getting " + current_url + "\n")
 
         try:
             # r = requests.get(current_url, headers=headers) # to run without tor
@@ -43,7 +46,8 @@ def get_thread(thread_url, db_name):
                        'https': 'socks5://127.0.0.1:9050'}  # to run with tor
             r = requests.get(current_url, proxies=proxies, headers=headers)  # to run with tor
         except:
-            print("There was an error. Proceeding to next url. Check 'failed_urls.txt'")
+            with open("flbscrp.log", "a") as logfile:
+                logfile.write("There was an error. Proceeding to next url. Check 'failed_urls.txt'\n")
             with open("failed_urls.txt", "a") as failfile:
                 failfile.write(current_url + "\n")  # record failed urls
             return(9000)
@@ -62,7 +66,8 @@ def get_thread(thread_url, db_name):
         Check the page length
         """
         # If length == 12 it is a full page:
-        print("---> Length of page: " + str(len(postsoup)) + " posts.")
+        with open("flbscrp.log", "a") as logfile:
+            logfile.write("---> Length of page: " + str(len(postsoup)) + " posts.\n")
 
         """
         Handle the problem with scraper stopping at 'moderator messages'
@@ -71,9 +76,12 @@ def get_thread(thread_url, db_name):
         try:
             titlediv = soup.find("div", class_="page-title")
             title = re.sub(r"[\n\t]*", "", titlediv.text)  # clean out tab, newlines
+            with open("flbscrp.log", "a") as logfile:
+                logfile.write("---> Thread title:"+ title + "\n")
         except:
             title = "<error getting title>"  # if title extraction fails.
-        print("---> Thread title:", title)
+            with open("flbscrp.log", "a") as logfile:
+                logfile.write("---> Thread title:" + title + "\n")
 
         """
         Extract the data add add to lists
@@ -167,7 +175,8 @@ def get_thread(thread_url, db_name):
                         pass
                         previouslyaddedpageposts = bodylist
 
-        print("Done")
+        with open("flbscrp.log", "a") as logfile:
+            logfile.write("Done\n")
 
 
 def get_subforum_threads(subforum_url):
@@ -177,10 +186,14 @@ def get_subforum_threads(subforum_url):
     current_url = subforum_url + "p" + str(page)
     filename = subforum_url.split("/")[3]
 
+    with open("flbscrp.log", "a") as logfile:
+        logfile.write("Running get_subforum_threads()\n")
+
     with open(filename + "_topic_urls.txt", "w") as outfile:
         while True:
             headers = {'User-Agent': UserAgent().random}
-            print("Getting " + current_url)
+            with open("flbscrp.log", "a") as logfile:
+                logfile.write("Getting " + current_url + "\n")
 
             # r = requests.get(current_url, headers=headers) # to run without tor
             proxies = {'http': 'socks5://127.0.0.1:9050',
@@ -193,7 +206,8 @@ def get_subforum_threads(subforum_url):
 
             if len(topics) >= 50:
 
-                print(str(len(topics)) + " threads")
+                with open("flbscrp.log", "a") as logfile:
+                    logfile.write(str(len(topics)) + " threads\n")
                 for t in topics:
                     threadurl = "https://flashback.org" + t.get("href")
                     outfile.write(threadurl + "\n")
@@ -205,7 +219,8 @@ def get_subforum_threads(subforum_url):
                     threadurl = "https://flashback.org" + t.get("href")
                     outfile.write(threadurl + "\n")
                 break
-        print("Done")
+        with open("flbscrp.log", "a") as logfile:
+            logfile.write("Done\n")
 
 
 def createdatabase(projectname):
@@ -234,15 +249,21 @@ def parseforumstructure(soup):
 
 
 def get_threads(file_with_urls, db_name):
+    with open("flbscrp.log", "a") as logfile:
+        logfile.write("Running get_threads()\n")
+
     with open(file_with_urls, "r") as urlfile:
         urls = urlfile.readlines()
     for c,url in enumerate(urls):
         url = url.strip("\n")
-        print("\n==== Thread " + str(c+1) + " / " + str(len(urls)))
+        with open("flbscrp.log", "a") as logfile:
+            logfile.write("\n==== Thread " + str(c+1) + " / " + str(len(urls)) + "\n")
         try:
             get_thread(url, db_name)
+            
         except:
-            print("There was an error. Proceeding to next url. Check 'failed_urls.txt'")
+            with open("flbscrp.log", "a") as logfile:
+                ("There was an error. Proceeding to next url. Check 'failed_urls.txt'\n")
             with open("failed_urls.txt", "a") as failfile:
                 failfile.write(current_url + "\n")  # record failed urls
             continue
@@ -250,14 +271,16 @@ def get_threads(file_with_urls, db_name):
 def check_ip():
     headers = {'User-Agent': UserAgent().random}
     test_r = requests.get("https://api.ipify.org/?format=text", headers=headers)
-    print("\nactual ip --> " + str(test_r.text))
+    with open("flbscrp.log", "a") as logfile:
+        logfile.write("\nactual ip --> " + str(test_r.text) + "\n")
 
 
 def check_tor():
     headers = {'User-Agent': UserAgent().random}
     proxies = {'http': 'socks5://127.0.0.1:9050', 'https': 'socks5://127.0.0.1:9050'}
     test_r = requests.get("https://api.ipify.org/?format=text", proxies=proxies, headers=headers)
-    print("tor ip -----> " + str(test_r.text) + "\n")
+    with open("flbscrp.log", "a") as logfile:
+        logfile.write("tor ip -----> " + str(test_r.text) + "\n")
 
 def sql2csv(filepath):
     conn = sqlite3.connect(filepath)
