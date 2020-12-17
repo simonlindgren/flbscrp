@@ -36,6 +36,20 @@ Populates the db with thread data.
 ```
 Populates the db with data from threads in file.
 
+### Logfile
+
+While jobs are running, inspect the logfile by e.g:
+
+```
+$ tail flbscrp.log
+```
+
+See the progress of `get_threads()` by:
+
+```
+$ cat flbscrp.log | grep " / "
+```
+
 ### Failed urls
 
 URLs that could not be scraped will be saved to `failed_urls.txt`.
