@@ -225,6 +225,30 @@ def get_subforum_threads(subforum_url):
         with open("flbscrp.log", "a") as logfile:
             logfile.write("Done\n")
 
+def rescrape_failed_threads(failfile, db_name):
+    import re
+    with open("flbscrp.log", "a") as logfile:
+        logfile.write("Running rescrape_failed_threads()\n")
+
+    with open(failfile, "r") as urlfile:
+        urls = urlfile.readlines()
+        for url in urls:
+            chunks = re.split('p[0-9]', url)
+            base_url = chunks[0]
+            with open("flbscrp.log", "a") as logfile:
+                logfile.write("\n==== Thread " + str(c+1) + " / " + str(len(urls)) + "\n")
+            try:
+                get_thread(url, db_name)
+                pause = random.randint(2,20)
+                with open("flbscrp.log", "a") as logfile:
+                    logfile.write("Sleeping " + str(pause) + " sec ...\n")
+                sleep(pause) # sleep a random number of seconds between 2 and 20
+            except:
+                with open("flbscrp.log", "a") as logfile:
+                    ("There was an error. Proceeding to next url. Check 'failed_urls.txt'\n")
+                with open("failed_urls.txt", "a") as failfile:
+                    failfile.write(current_url + "\n")  # record failed urls
+                continue
 
 def createdatabase(projectname):
     try:

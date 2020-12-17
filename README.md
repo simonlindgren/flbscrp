@@ -54,6 +54,11 @@ $ cat flbscrp.log | grep " / "
 
 URLs that could not be scraped will be saved to `failed_urls.txt`.
 
+Use `rescrape_failed_threads()` to try to rescrape the full threads in which any page failed in the previous run:
+
+```
+>>> flbscp.rescrape_failed_threads("failed_urls.txt", "my_data.sqlite3")
+
 ### Convert database to csv
 ```
 >>> flbscrp.sql2csv("my_data.sqlite3")
