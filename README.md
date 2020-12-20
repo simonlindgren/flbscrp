@@ -47,7 +47,7 @@ $ tail flbscrp.log
 See the progress of `get_threads()` by:
 
 ```
-$ cat flbscrp.log | grep " / "
+$ cat flbscrp.log | grep " --out of-- "
 ```
 
 ### Failed urls

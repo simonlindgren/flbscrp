@@ -284,7 +284,7 @@ def get_threads(file_with_urls, db_name):
     for c,url in enumerate(urls):
         url = url.strip("\n")
         with open("flbscrp.log", "a") as logfile:
-            logfile.write("\n==== Thread " + str(c+1) + " / " + str(len(urls)) + "\n")
+            logfile.write("\n==== Thread " + str(c+1) + " --out of-- " + str(len(urls)) + "\n")
         try:
             get_thread(url, db_name)
             pause = random.randint(2,20)
