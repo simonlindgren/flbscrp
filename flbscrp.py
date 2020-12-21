@@ -239,7 +239,7 @@ def rescrape_failed_threads(failfile, db_name):
                 logfile.write("\n==== Thread " + str(c+1) + " / " + str(len(urls)) + "\n")
             try:
                 get_thread(url, db_name)
-                pause = random.randint(2,20)
+                pause = random.randint(2,7)
                 with open("flbscrp.log", "a") as logfile:
                     logfile.write("Sleeping " + str(pause) + " sec ...\n")
                 sleep(pause) # sleep a random number of seconds between 2 and 20
