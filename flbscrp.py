@@ -287,7 +287,7 @@ def get_threads(file_with_urls, db_name):
             logfile.write("\n==== Thread " + str(c+1) + " --out of-- " + str(len(urls)) + "\n")
         try:
             get_thread(url, db_name)
-            pause = random.randint(2,8) # increase this if script crashes; (2,20) seems to avoid crashes, but must evaluate how low to go
+            pause = random.randint(2,7) # increase this if script crashes; (2,20) seems to avoid crashes, but must evaluate how low to go
             with open("flbscrp.log", "a") as logfile:
                 logfile.write("Sleeping " + str(pause) + " sec ...\n")
             sleep(pause) # sleep a random number of seconds between 2 and 20
