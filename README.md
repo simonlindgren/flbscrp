@@ -12,6 +12,12 @@ $ python3
 
 >>> import flbscrp
 ```
+### Check tor
+```
+>>> flbscrp.check_ip()
+>>> flbscrp.check_tor()
+```
+
 ### Get subforum urls
 ```
 >>> flbscrp.get_subforum_threads("https://www.fl*shb*ck.org/f***")

@@ -21,8 +21,6 @@ import random
 
 
 def get_thread(thread_url, db_name):
-    check_ip()
-    check_tor()
     page = 1
     current_url = thread_url + "p" + str(page)
     previouslyaddedpageposts = []
@@ -183,8 +181,6 @@ def get_thread(thread_url, db_name):
 
 
 def get_subforum_threads(subforum_url):
-    check_ip()
-    check_tor()
     page = 1
     current_url = subforum_url + "p" + str(page)
     filename = subforum_url.split("/")[3]
@@ -301,16 +297,14 @@ def get_threads(file_with_urls, db_name):
 def check_ip():
     headers = {'User-Agent': UserAgent().random}
     test_r = requests.get("https://api.ipify.org/?format=text", headers=headers)
-    with open("flbscrp.log", "a") as logfile:
-        logfile.write("\nactual ip --> " + str(test_r.text) + "\n")
+    print("actual ip --> " + str(test_r.text) + "\n")
 
 
 def check_tor():
     headers = {'User-Agent': UserAgent().random}
     proxies = {'http': 'socks5://127.0.0.1:9050', 'https': 'socks5://127.0.0.1:9050'}
     test_r = requests.get("https://api.ipify.org/?format=text", proxies=proxies, headers=headers)
-    with open("flbscrp.log", "a") as logfile:
-        logfile.write("tor ip -----> " + str(test_r.text) + "\n")
+    print("tor ip -----> " + str(test_r.text) + "\n")
 
 def sql2csv(filepath):
     conn = sqlite3.connect(filepath)
