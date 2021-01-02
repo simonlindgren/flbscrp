@@ -66,6 +66,9 @@ Use `rescrape_failed_threads()` to try to rescrape the full threads in which any
 >>> flbscp.rescrape_failed_threads("failed_urls.txt", "my_data.sqlite3")
 ```
 
+The above will also rename `failed_urls.txt` to `_failed_urls.txt`. If now new `failed_urls.txt` is been created, the rescrape was completely successful. Otherwise iterate.
+
+
 ### Convert database to csv
 
 ```
