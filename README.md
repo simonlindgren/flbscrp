@@ -32,9 +32,9 @@ Creates empty \*sqlite3.
 
 ### Get one thread
 ```
->>> flbscrp.get_thread("https://www.fl*shb*ck.org/t******", "my_data.sqlite3")
+>>> flbscrp.get_thread("https://www.fl*shb*ck.org/t******", "my_data.sqlite3", 1)
 ```
-Populates the db with thread data.
+Populates the db with thread data. The `1` tells the scraper to always start scraping threads at their first page.
 
 ### Get threads from file with urls
 ```

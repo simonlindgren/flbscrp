@@ -21,8 +21,8 @@ import random
 import os
 
 
-def get_thread(thread_url, db_name):
-    page = 1
+def get_thread(thread_url, db_name, startpage):
+    page = startpage
     current_url = thread_url + "p" + str(page)
     previouslyaddedpageposts = []
 
@@ -222,33 +222,6 @@ def get_subforum_threads(subforum_url):
         with open("flbscrp.log", "a") as logfile:
             logfile.write("Done\n")
 
-def rescrape_failed_threads(failfile, db_name):
-    import re
-    with open("flbscrp.log", "a") as logfile:
-        logfile.write("Running rescrape_failed_threads()\n")
-
-    with open(failfile, "r") as urlfile:
-        urls = urlfile.readlines()
-        os.rename(failfile, "_" + failfile)
-        for c,url in enumerate(urls):
-            chunks = re.split('p[0-9]', url)
-            base_url = chunks[0]
-            with open("flbscrp.log", "a") as logfile:
-                logfile.write("\n==== Thread " + str(c+1) + " / " + str(len(urls)) + "\n")
-            try:
-                get_thread(base_url, db_name)
-                pause = random.randint(2,7)
-                with open("flbscrp.log", "a") as logfile:
-                    logfile.write("Sleeping " + str(pause) + " sec ...\n")
-                sleep(pause) # sleep a random number of seconds between 2 and 20
-            except:
-                with open("flbscrp.log", "a") as logfile:
-                    ("There was an error. Proceeding to next url. Check 'failed_urls.txt'\n")
-                with open("failed_urls.txt", "a") as failfile:
-                    failfile.write(current_url + "\n")  # record failed urls
-                continue
-    with open("flbscrp.log", "a") as logfile:
-        logfile.write("\nDone!")
 
 def createdatabase(projectname):
     try:
@@ -286,7 +259,7 @@ def get_threads(file_with_urls, db_name):
         with open("flbscrp.log", "a") as logfile:
             logfile.write("\n==== Thread " + str(c+1) + " --out of-- " + str(len(urls)) + "\n")
         try:
-            get_thread(url, db_name)
+            get_thread(url, db_name, 1)
             pause = random.randint(2,7) # increase this if script crashes; (2,20) seems to avoid crashes, but must evaluate how low to go
             with open("flbscrp.log", "a") as logfile:
                 logfile.write("Sleeping " + str(pause) + " sec ...\n")
@@ -297,6 +270,45 @@ def get_threads(file_with_urls, db_name):
             with open("failed_urls.txt", "a") as failfile:
                 failfile.write(current_url + "\n")  # record failed urls
             continue
+
+def rescrape_failed_threads(failfile, db_name):
+
+    with open("flbscrp.log", "a") as logfile:
+        logfile.write("Running rescrape_failed_threads()\n")
+
+    with open(failfile, "r") as urlfile:
+        urls = urlfile.readlines()
+        os.rename(failfile, "old_" + failfile)
+        for c,u in enumerate(urls):
+            u = u.split("://")
+            u = u[1].split("\n")[0]
+            u = u.split("p")
+            if len(u) < 2:
+                startpage = 1
+            else:
+                startpage = u[1]
+            url = "https://" + u[0]
+
+            with open("flbscrp.log", "a") as logfile:
+                logfile.write("\n==== Thread " + str(c+1) + "  --out of-- " + str(len(urls)) + "\n")
+
+            try:
+                get_thread(url, db_name, startpage)
+                with open("flbscrp.log", "a") as logfile:
+                    logfile.write("\n==== Rescraping " + url + " starting at page " + str(startpage) + "\n")
+                pause = random.randint(2,7)
+                with open("flbscrp.log", "a") as logfile:
+                    logfile.write("Sleeping " + str(pause) + " sec ...\n")
+                sleep(pause) # sleep a random number of seconds between 2 and 20
+            except:
+                with open("flbscrp.log", "a") as logfile:
+                    ("There was an error. Proceeding to next url. Check 'failed_urls.txt'\n")
+                with open("failed_urls.txt", "a") as failfile:
+                    failfile.write(current_url + "\n")  # record failed urls
+                continue
+    with open("flbscrp.log", "a") as logfile:
+        logfile.write("\nDone!")
+
 
 def check_ip():
     headers = {'User-Agent': UserAgent().random}
